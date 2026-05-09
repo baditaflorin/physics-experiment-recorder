@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -euo pipefail
 
 if [[ "${SKIP_SMOKE_BUILD:-0}" != "1" ]]; then
