@@ -13,8 +13,11 @@ import {
   Upload,
   X,
   Zap,
+  QrCode,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { LiveCameraPanel } from "./LiveCameraPanel";
+import { TagQrPanel } from "./TagQrPanel";
 
 import { demoExperiment } from "../../domain/demo";
 import {
@@ -392,6 +395,24 @@ export function RecorderApp() {
                 </button>
               </div>
             ) : null}
+          </section>
+
+          <section className="panel-section">
+            <h2>Live Camera</h2>
+            <LiveCameraPanel
+              options={options}
+              appVersion={__APP_VERSION__}
+              commit={__GIT_COMMIT__}
+              onRecord={(rec) => setRecord(rec)}
+            />
+          </section>
+
+          <section className="panel-section">
+            <h2>
+              <QrCode size={16} aria-hidden="true" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.35rem" }} />
+              AprilTag on Phone
+            </h2>
+            <TagQrPanel />
           </section>
 
           <section className="panel-section">
