@@ -104,13 +104,24 @@ export function Plot({ points, fit }: PlotProps) {
         {fitPath ? <path className="fit-line" d={fitPath} /> : null}
         {points.map((point) => {
           const value = axis === "x" ? point.xMeters : point.yMeters;
+          const sampleClass = point.issues.includes("position-outlier")
+            ? "sample outlier"
+            : point.confidence < 0.5
+              ? "sample low"
+              : "sample";
           return (
             <circle
               key={point.id}
-              className={point.confidence < 0.5 ? "sample low" : "sample"}
+              className={sampleClass}
               cx={xScale(point.t)}
               cy={yScale(value)}
-              r={point.confidence < 0.5 ? 3.8 : 3}
+              r={
+                sampleClass.includes("outlier")
+                  ? 5
+                  : point.confidence < 0.5
+                    ? 3.8
+                    : 3
+              }
             />
           );
         })}

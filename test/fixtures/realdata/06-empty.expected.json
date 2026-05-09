@@ -1,0 +1,7 @@
+{
+  "expectedKind": "falling",
+  "expectedModel": "constant-acceleration",
+  "minPoints": 0,
+  "maxErrors": 2,
+  "requiredWarnings": ["Too few usable samples"]
+}

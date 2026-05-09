@@ -1,0 +1,7 @@
+{
+  "expectedKind": "falling",
+  "expectedModel": "constant-acceleration",
+  "minPoints": 9,
+  "maxErrors": 0,
+  "requiredWarnings": ["Large time gap detected", "Position outlier detected"]
+}

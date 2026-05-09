@@ -1,0 +1,7 @@
+{
+  "expectedKind": "cart",
+  "expectedModel": "damped-cart",
+  "minPoints": 12,
+  "maxErrors": 0,
+  "requiredWarnings": []
+}

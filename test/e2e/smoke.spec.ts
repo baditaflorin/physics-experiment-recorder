@@ -5,7 +5,7 @@ test("homepage loads and demo flow fits motion", async ({ page }) => {
   await expect(
     page.getByRole("heading", { name: /phone video to physics data/i }),
   ).toBeVisible();
-  await expect(page.getByText(/v0\.1\.0/)).toBeVisible();
+  await expect(page.getByText(/v0\.2\.0/)).toBeVisible();
   await expect(
     page.getByRole("link", { name: /star on github/i }),
   ).toHaveAttribute(

@@ -55,7 +55,10 @@ export function RecorderApp() {
   const [fatalError, setFatalError] = useState(false);
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [modelKind, setModelKind] = useState<ModelKind>("auto");
+  const [modelKind, setModelKind] = useState<ModelKind>(() => {
+    const stored = sessionStorage.getItem("preferredModelKind");
+    return isModelKind(stored) ? stored : "auto";
+  });
   const [options, setOptions] = useState<VideoAnalysisOptions>({
     sampleRateFps: 12,
     maxFrames: 360,
@@ -455,7 +458,10 @@ export function RecorderApp() {
               <select
                 value={modelKind}
                 onChange={(event) =>
-                  setModelKind(event.currentTarget.value as ModelKind)
+                  rememberModelChoice(
+                    event.currentTarget.value as ModelKind,
+                    setModelKind,
+                  )
                 }
               >
                 <option value="auto">auto</option>
@@ -583,6 +589,14 @@ function RecordSummary({ record }: { record: ExperimentRecord }) {
           </strong>
         </div>
       </div>
+      <details className="reason-box">
+        <summary>Inference reasoning</summary>
+        <ul>
+          {record.inference.reasons.map((reason) => (
+            <li key={reason}>{reason}</li>
+          ))}
+        </ul>
+      </details>
     </section>
   );
 }
@@ -681,4 +695,21 @@ async function decodeTextFile(file: File) {
     return utf8;
   }
   return new TextDecoder("windows-1252").decode(buffer);
+}
+
+function isModelKind(value: string | null): value is ModelKind {
+  return (
+    value === "auto" ||
+    value === "constant-acceleration" ||
+    value === "pendulum" ||
+    value === "damped-cart"
+  );
+}
+
+function rememberModelChoice(
+  value: ModelKind,
+  setModelKind: (value: ModelKind) => void,
+) {
+  sessionStorage.setItem("preferredModelKind", value);
+  setModelKind(value);
 }

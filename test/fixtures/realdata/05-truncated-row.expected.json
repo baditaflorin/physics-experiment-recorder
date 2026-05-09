@@ -1,0 +1,7 @@
+{
+  "expectedKind": "cart",
+  "expectedModel": "damped-cart",
+  "minPoints": 5,
+  "maxErrors": 0,
+  "requiredWarnings": ["Incomplete position row"]
+}

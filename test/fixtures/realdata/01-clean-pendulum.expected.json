@@ -1,0 +1,7 @@
+{
+  "expectedKind": "pendulum",
+  "expectedModel": "pendulum",
+  "minPoints": 18,
+  "maxErrors": 0,
+  "requiredWarnings": []
+}

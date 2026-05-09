@@ -1,0 +1,7 @@
+{
+  "expectedKind": "cart",
+  "expectedModel": "damped-cart",
+  "minPoints": 8,
+  "maxErrors": 0,
+  "requiredWarnings": ["Headerless CSV inferred"]
+}

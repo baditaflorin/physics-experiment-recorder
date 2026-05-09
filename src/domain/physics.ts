@@ -38,6 +38,19 @@ export function inferExperiment(points: MotionPoint[]): InferenceSummary {
   const monotonicY = monotonicScore(ys);
   const monotonicX = monotonicScore(xs);
 
+  if (yRange > xRange * 0.45 && monotonicY > 0.72) {
+    return {
+      experimentKind: "falling",
+      modelKind: "constant-acceleration",
+      confidence: Math.min(0.94, 0.52 + monotonicY * 0.36),
+      reasons: [
+        "Vertical displacement dominates the track.",
+        "The vertical coordinate changes mostly in one direction.",
+      ],
+      anomalies,
+    };
+  }
+
   if (signChanges >= 2) {
     return {
       experimentKind: "pendulum",
@@ -46,19 +59,6 @@ export function inferExperiment(points: MotionPoint[]): InferenceSummary {
       reasons: [
         `The dominant coordinate reverses direction ${signChanges} times.`,
         "Oscillating tracks usually fit a pendulum model first.",
-      ],
-      anomalies,
-    };
-  }
-
-  if (yRange > xRange * 1.35 && monotonicY > 0.72) {
-    return {
-      experimentKind: "falling",
-      modelKind: "constant-acceleration",
-      confidence: Math.min(0.94, 0.52 + monotonicY * 0.36),
-      reasons: [
-        "Vertical displacement dominates the track.",
-        "The vertical coordinate changes mostly in one direction.",
       ],
       anomalies,
     };
@@ -275,9 +275,9 @@ export function findAnomalies(points: MotionPoint[]): DomainIssue[] {
     );
   }
   const lowConfidence = points.filter(
-    (point) => point.confidence < 0.45,
+    (point) => point.confidence < 0.55,
   ).length;
-  if (lowConfidence > Math.max(2, points.length * 0.2)) {
+  if (lowConfidence >= Math.max(2, points.length * 0.15)) {
     issues.push(
       issue(
         "warning",
@@ -285,6 +285,17 @@ export function findAnomalies(points: MotionPoint[]): DomainIssue[] {
         "The marker was weak, blurred, or partly hidden in many frames.",
         "Use a larger tag, improve lighting, or crop to the experiment area.",
         "confidence",
+      ),
+    );
+  }
+  if (points.some((point) => point.issues.includes("position-outlier"))) {
+    issues.push(
+      issue(
+        "warning",
+        "Position outlier detected",
+        "At least one sample jumps much farther than neighboring samples.",
+        "Inspect the highlighted sample before trusting acceleration or friction values.",
+        "position",
       ),
     );
   }

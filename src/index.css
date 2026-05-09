@@ -335,6 +335,25 @@ progress {
   padding: 0.2rem 0.55rem;
 }
 
+.reason-box {
+  background: #f9fbf8;
+  border: 1px solid #dbe6dd;
+  border-radius: 0.5rem;
+  color: #52645e;
+  padding: 0.75rem 0.85rem;
+}
+
+.reason-box summary {
+  color: #10201c;
+  cursor: pointer;
+  font-weight: 760;
+}
+
+.reason-box ul {
+  margin: 0.55rem 0 0;
+  padding-left: 1.1rem;
+}
+
 .summary-grid {
   display: grid;
   gap: 0.7rem;
@@ -399,6 +418,12 @@ progress {
 
 .sample.low {
   fill: #f97316;
+}
+
+.sample.outlier {
+  fill: #dc2626;
+  stroke: #7f1d1d;
+  stroke-width: 1.5;
 }
 
 .fit-line {

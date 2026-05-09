@@ -1,6 +1,6 @@
 # Physics Experiment Recorder
 
-![Version](https://img.shields.io/badge/version-0.1.0-047857)
+![Version](https://img.shields.io/badge/version-0.2.0-047857)
 ![Deployment](https://img.shields.io/badge/deployment-GitHub%20Pages-334155)
 ![License](https://img.shields.io/badge/license-MIT-334155)
 
