@@ -13,6 +13,8 @@ dist-ssr
 dist-data
 coverage
 tmp
+test-results
+playwright-report
 *.local
 .env
 .env.*

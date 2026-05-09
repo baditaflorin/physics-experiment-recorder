@@ -1,0 +1,9 @@
+node_modules
+docs/assets
+docs/sw.js
+docs/sw.js.map
+docs/workbox-*.js
+docs/workbox-*.js.map
+coverage
+test-results
+playwright-report
