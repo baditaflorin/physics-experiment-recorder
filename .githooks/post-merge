@@ -1,5 +1,5 @@
 #!/bin/bash
 set -euo pipefail
 
-npm install
-npm run build
+echo "Mode A: no generated code to refresh after merge."
+exit 0
