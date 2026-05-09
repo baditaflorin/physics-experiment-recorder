@@ -15,4 +15,4 @@ for _ in {1..30}; do
   sleep 0.2
 done
 
-npx playwright test --config playwright.config.ts
+node scripts/playwright-smoke.mjs
