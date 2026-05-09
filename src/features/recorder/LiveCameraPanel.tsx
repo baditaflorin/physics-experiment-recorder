@@ -89,9 +89,10 @@ export function LiveCameraPanel({ options, appVersion, commit, onRecord }: Props
         audio: false,
       });
       streamRef.current = stream;
+      // videoRef is always mounted (hidden when idle), so this is always valid
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        videoRef.current.play().catch(() => {/* muted autoplay is allowed */});
       }
       setPhase("preview");
     } catch (err) {
@@ -298,39 +299,40 @@ export function LiveCameraPanel({ options, appVersion, commit, onRecord }: Props
         </button>
       )}
 
-      {(phase === "preview" || phase === "tracking") && (
-        <div className="video-box">
-          <video
-            ref={videoRef}
-            autoPlay
-            playsInline
-            muted
-            style={{ width: "100%", borderRadius: "4px" }}
-          />
-          <div className="button-grid">
-            {phase === "preview" && (
-              <button type="button" className="primary" onClick={() => void startTracking()}>
-                <Square size={18} aria-hidden="true" />
-                Record &amp; Track
-              </button>
-            )}
-            {phase === "tracking" && (
-              <button type="button" className="danger" onClick={() => void stopTracking()}>
-                <CircleStop size={18} aria-hidden="true" />
-                Stop
-              </button>
-            )}
+      {/* video is always mounted so videoRef.current is always valid */}
+      <div className="video-box" style={{ display: phase === "idle" ? "none" : undefined }}>
+        <video
+          ref={videoRef}
+          autoPlay
+          playsInline
+          muted
+          style={{ width: "100%", borderRadius: "4px", background: "#000" }}
+        />
+        <div className="button-grid">
+          {phase === "preview" && (
+            <button type="button" className="primary" onClick={() => void startTracking()}>
+              <Square size={18} aria-hidden="true" />
+              Record &amp; Track
+            </button>
+          )}
+          {phase === "tracking" && (
+            <button type="button" className="danger" onClick={() => void stopTracking()}>
+              <CircleStop size={18} aria-hidden="true" />
+              Stop
+            </button>
+          )}
+          {phase !== "idle" && (
             <button type="button" onClick={stopCamera}>
               Close Camera
             </button>
-          </div>
-          {phase === "tracking" && (
-            <p style={{ fontSize: "0.8rem", color: "var(--color-muted, #666)" }}>
-              {detectedCount} detections / {frameCount} frames
-            </p>
           )}
         </div>
-      )}
+        {phase === "tracking" && (
+          <p style={{ fontSize: "0.8rem", color: "var(--color-muted, #666)" }}>
+            {detectedCount} detections / {frameCount} frames
+          </p>
+        )}
+      </div>
 
       {recordingBlob && (
         <button type="button" onClick={downloadRecording}>
