@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-npm run build
+if [[ "${SKIP_SMOKE_BUILD:-0}" != "1" ]]; then
+  npm run build
+fi
 node scripts/static-server.mjs docs 4175 > /tmp/physics-recorder-smoke.log 2>&1 &
 server_pid=$!
 trap 'kill "$server_pid" >/dev/null 2>&1 || true' EXIT

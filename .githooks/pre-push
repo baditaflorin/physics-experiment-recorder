@@ -5,4 +5,4 @@ make test
 make build
 test -s docs/index.html
 grep -q '<div id="root">' docs/index.html
-make smoke
+SKIP_SMOKE_BUILD=1 make smoke
