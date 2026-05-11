@@ -34,11 +34,18 @@ type Props = {
   onRecord: (record: ExperimentRecord) => void;
 };
 
-export function LiveCameraPanel({ options, appVersion, commit, onRecord }: Props) {
+export function LiveCameraPanel({
+  options,
+  appVersion,
+  commit,
+  onRecord,
+}: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const workerRef = useRef<Worker | null>(null);
-  const trackerRef = useRef<ReturnType<typeof Comlink.wrap<TrackerApi>> | null>(null);
+  const trackerRef = useRef<ReturnType<typeof Comlink.wrap<TrackerApi>> | null>(
+    null,
+  );
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const samplesRef = useRef<DetectionSample[]>([]);
@@ -85,14 +92,20 @@ export function LiveCameraPanel({ options, appVersion, commit, onRecord }: Props
     setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
         audio: false,
       });
       streamRef.current = stream;
       // videoRef is always mounted (hidden when idle), so this is always valid
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
-        videoRef.current.play().catch(() => {/* muted autoplay is allowed */});
+        videoRef.current.play().catch(() => {
+          /* muted autoplay is allowed */
+        });
       }
       setPhase("preview");
     } catch (err) {
@@ -159,13 +172,32 @@ export function LiveCameraPanel({ options, appVersion, commit, onRecord }: Props
   }
 
   async function processFrame() {
-    if (busyRef.current || !videoRef.current || !canvasRef.current || !trackerRef.current) return;
+    if (
+      busyRef.current ||
+      !videoRef.current ||
+      !canvasRef.current ||
+      !trackerRef.current
+    )
+      return;
     busyRef.current = true;
     try {
-      const ctx = canvasRef.current.getContext("2d", { willReadFrequently: true });
+      const ctx = canvasRef.current.getContext("2d", {
+        willReadFrequently: true,
+      });
       if (!ctx) return;
-      ctx.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
-      const imageData = ctx.getImageData(0, 0, canvasRef.current.width, canvasRef.current.height);
+      ctx.drawImage(
+        videoRef.current,
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height,
+      );
+      const imageData = ctx.getImageData(
+        0,
+        0,
+        canvasRef.current.width,
+        canvasRef.current.height,
+      );
       const t = (performance.now() - startTimeRef.current) / 1000;
       const frame = frameCountRef.current++;
       setFrameCount(frame + 1);
@@ -287,20 +319,29 @@ export function LiveCameraPanel({ options, appVersion, commit, onRecord }: Props
   return (
     <div className="live-camera-panel">
       {error && (
-        <p style={{ color: "var(--color-error, #dc2626)", fontSize: "0.85rem" }}>
+        <p
+          style={{ color: "var(--color-error, #dc2626)", fontSize: "0.85rem" }}
+        >
           {error}
         </p>
       )}
 
       {phase === "idle" && (
-        <button type="button" className="primary wide" onClick={() => void startPreview()}>
+        <button
+          type="button"
+          className="primary wide"
+          onClick={() => void startPreview()}
+        >
           <Camera size={18} aria-hidden="true" />
           Open Camera
         </button>
       )}
 
       {/* video is always mounted so videoRef.current is always valid */}
-      <div className="video-box" style={{ display: phase === "idle" ? "none" : undefined }}>
+      <div
+        className="video-box"
+        style={{ display: phase === "idle" ? "none" : undefined }}
+      >
         <video
           ref={videoRef}
           autoPlay
@@ -310,13 +351,21 @@ export function LiveCameraPanel({ options, appVersion, commit, onRecord }: Props
         />
         <div className="button-grid">
           {phase === "preview" && (
-            <button type="button" className="primary" onClick={() => void startTracking()}>
+            <button
+              type="button"
+              className="primary"
+              onClick={() => void startTracking()}
+            >
               <Square size={18} aria-hidden="true" />
               Record &amp; Track
             </button>
           )}
           {phase === "tracking" && (
-            <button type="button" className="danger" onClick={() => void stopTracking()}>
+            <button
+              type="button"
+              className="danger"
+              onClick={() => void stopTracking()}
+            >
               <CircleStop size={18} aria-hidden="true" />
               Stop
             </button>

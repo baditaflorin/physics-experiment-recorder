@@ -16,16 +16,39 @@ export function TagQrPanel() {
   }, [tagUrl]);
 
   return (
-    <div className="tag-qr-panel" style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: "0.5rem" }}>
-      <p style={{ fontSize: "0.8rem", color: "var(--color-muted, #666)", margin: 0 }}>
+    <div
+      className="tag-qr-panel"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: "0.5rem",
+      }}
+    >
+      <p
+        style={{
+          fontSize: "0.8rem",
+          color: "var(--color-muted, #666)",
+          margin: 0,
+        }}
+      >
         Scan with your phone to display an AprilTag on screen for quick testing.
       </p>
-      <canvas ref={qrRef} style={{ border: "1px solid #e2e8f0", borderRadius: "4px" }} />
+      <canvas
+        ref={qrRef}
+        style={{ border: "1px solid #e2e8f0", borderRadius: "4px" }}
+      />
       <a
         href={tagUrl}
         target="_blank"
         rel="noreferrer"
-        style={{ fontSize: "0.8rem", display: "flex", alignItems: "center", gap: "0.25rem", color: "#047857" }}
+        style={{
+          fontSize: "0.8rem",
+          display: "flex",
+          alignItems: "center",
+          gap: "0.25rem",
+          color: "#047857",
+        }}
       >
         <ExternalLink size={14} aria-hidden="true" />
         Open AprilTag display

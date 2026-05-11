@@ -409,7 +409,15 @@ export function RecorderApp() {
 
           <section className="panel-section">
             <h2>
-              <QrCode size={16} aria-hidden="true" style={{ display: "inline", verticalAlign: "middle", marginRight: "0.35rem" }} />
+              <QrCode
+                size={16}
+                aria-hidden="true"
+                style={{
+                  display: "inline",
+                  verticalAlign: "middle",
+                  marginRight: "0.35rem",
+                }}
+              />
               AprilTag on Phone
             </h2>
             <TagQrPanel />

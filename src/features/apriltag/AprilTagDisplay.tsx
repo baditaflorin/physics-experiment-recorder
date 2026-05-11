@@ -53,7 +53,11 @@ export function AprilTagDisplay() {
     >
       <canvas
         ref={canvasRef}
-        style={{ imageRendering: "pixelated", maxWidth: "100%", maxHeight: "80dvh" }}
+        style={{
+          imageRendering: "pixelated",
+          maxWidth: "100%",
+          maxHeight: "80dvh",
+        }}
       />
       <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
         <label style={{ fontFamily: "sans-serif", fontSize: "0.9rem" }}>
@@ -72,7 +76,11 @@ export function AprilTagDisplay() {
         </label>
         <a
           href="../"
-          style={{ fontFamily: "sans-serif", fontSize: "0.9rem", color: "#047857" }}
+          style={{
+            fontFamily: "sans-serif",
+            fontSize: "0.9rem",
+            color: "#047857",
+          }}
         >
           ← Back to recorder
         </a>
