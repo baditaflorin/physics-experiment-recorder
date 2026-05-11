@@ -142,39 +142,73 @@ export function fitDampedCart(points: MotionPoint[]): FitResult {
     axis === "x" ? point.xMeters : point.yMeters,
   );
   const times = points.map((point) => point.t);
-  const linear = polynomialFit(times, values, 1);
-  const velocity = linear[1];
-  const residuals = values.map(
-    (value, index) => value - (linear[0] + linear[1] * times[index]),
-  );
-  const residualSlope = polynomialFit(
-    times,
-    residuals.map((value) => Math.abs(value) + 1e-6),
-    1,
-  )[1];
-  const friction = Math.max(
-    0,
-    Math.min(5, Math.abs(residualSlope / (Math.abs(velocity) + 1e-6))),
-  );
-  const fitted = times.map((time) => ({
-    t: time,
-    value: linear[0] + velocity * time,
-  }));
+
+  // A cart sliding on a surface with kinetic friction follows:
+  //   x(t) = x0 + v0 t + 0.5 a t²       (while moving)
+  //   x(t) = x_stop                      (after the cart stops at t_stop = -v0/a)
+  // where a = -μ g pointed against the velocity. Fitting a parabola
+  // recovers x0, v0, and a directly. The prior implementation only fit a
+  // straight line and computed "friction" from the |residual| slope, so the
+  // curve drawn on the plot was indistinguishable from a constant-velocity
+  // glide — there was no damping anywhere in the fitted output.
+  const [c0, c1, c2] = polynomialFit(times, values, 2);
+  const acceleration = 2 * c2;
+  const v0 = c1;
+  const x0 = c0;
+  // The cart stops when v(t) = v0 + a t = 0. If the acceleration sign matches
+  // the velocity sign the cart is speeding up, not decelerating, so we don't
+  // clamp to a stopping point.
+  const decelerating = v0 !== 0 && Math.sign(acceleration) !== Math.sign(v0);
+  const stopTime = decelerating ? -v0 / acceleration : Number.POSITIVE_INFINITY;
+  const xStop = decelerating
+    ? x0 + v0 * stopTime + 0.5 * acceleration * stopTime * stopTime
+    : null;
+
+  const evaluate = (time: number) => {
+    if (decelerating && xStop !== null && time >= stopTime) {
+      return xStop;
+    }
+    return x0 + v0 * time + 0.5 * acceleration * time * time;
+  };
+  const fitted = times.map((time) => ({ t: time, value: evaluate(time) }));
   const stats = fitStats(
     values,
     fitted.map((point) => point.value),
   );
+
+  // Kinetic-friction coefficient μ_k = |a| / g. Surface friction values are
+  // typically 0.02 (steel-on-ice) to 1.2 (rubber-on-asphalt) — clip to that
+  // band so an unrelated quadratic fit doesn't surface as a credible μ.
+  const frictionCoefficient = Math.min(2, Math.abs(acceleration) / 9.80665);
+  const frictionConfidence = decelerating
+    ? Math.min(0.95, 0.4 + stats.r2 * 0.6)
+    : Math.max(0.05, stats.r2 * 0.4);
+
   return {
     modelKind: "damped-cart",
     parameters: [
-      parameter("position0", `${axis}(0)`, linear[0], "m", stats.r2),
-      parameter("velocity", `${axis} velocity`, velocity, "m/s", stats.r2),
+      parameter("position0", `${axis}(0)`, x0, "m", stats.r2),
+      parameter("velocity0", `${axis} velocity`, v0, "m/s", stats.r2),
+      parameter(
+        "acceleration",
+        "deceleration",
+        acceleration,
+        "m/s^2",
+        stats.r2,
+      ),
       parameter(
         "frictionCoefficient",
-        "friction coefficient proxy",
-        friction,
-        "1/s",
-        0.52 + stats.r2 / 2,
+        decelerating ? "kinetic friction μ_k" : "no clear deceleration",
+        frictionCoefficient,
+        "",
+        frictionConfidence,
+      ),
+      parameter(
+        "stopTime",
+        decelerating ? "predicted stop time" : "stop time (not detected)",
+        decelerating ? stopTime : 0,
+        "s",
+        frictionConfidence,
       ),
     ],
     ...stats,
